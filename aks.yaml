@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: simplenginx
+  name: simplenginx
+  namespace: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simplenginx
+  template:
+    metadata:
+      labels:
+        app: simplenginx
+    spec:
+      containers:
+      - image: registry/repo
+        name: test
+        ports:
+        - containerPort: 80
+          name: test
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  labels:
+    app: simplenginx
+  name: simplenginx
+  namespace: test
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: simplenginx
+  type: LoadBalancer
